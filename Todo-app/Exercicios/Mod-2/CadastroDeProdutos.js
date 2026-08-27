@@ -66,6 +66,7 @@ function menuInicial (){
     });
 }
 
+
 function gestaoDeEstoque (escolhaUsuario){
 
     switch(escolhaUsuario){
@@ -83,13 +84,13 @@ function gestaoDeEstoque (escolhaUsuario){
 
 
         case 2:
-            //TODO: Buscar produto por ID
+            //DONE: Buscar produto por ID
             rl.question("Digite o ID do produto que quer buscar: ", function(idDoProduto){
 
                 // DONE: tratar cenário de lista de produtos vazia
                 tratarListaVazia();
 
-                // TODO: tratar resultados inválidos
+                // TODO [BUG]: Não posso usar o .length para ID inválido, quando removo produto da lista o length muda, um ID válido pode ser dado como inválido pois > length
                 idDoProduto = Number(idDoProduto);
                 if (isNaN(idDoProduto) === true || idDoProduto <= 0 || idDoProduto > listaDeProdutos.length) {
                     tratarResultadoInvalido(2);
@@ -99,7 +100,23 @@ function gestaoDeEstoque (escolhaUsuario){
                     if (listaDeProdutos[produto].id === Number(idDoProduto)) {
                         console.log(`\n O produto ${listaDeProdutos[produto].id} é ${listaDeProdutos[produto].nome}`)
 
+                        // TODO: descobrir como eu posso transformar isto em função considerando que vou repetir a estrutura, mas com pequenas diferenças no texto
+                        // Talvez seja o caso de criar um controle de fluxo dentro da função que muda o texto de acordo com o contexto.
                         rl.question("\n Como deseja seguir? \n" + "1 - Voltar ao menu \n" + "2 - Consultar outro produto \n", function(escolhaUsuario){
+                            escolhaUsuario = Number(escolhaUsuario);
+                            switch(escolhaUsuario){
+                                case 1:
+                                    menuInicial();
+                                    break;
+                                case 2:
+                                    gestaoDeEstoque(2);
+                                    break;
+
+                            }
+                        })
+                    }
+                    else{
+                        rl.question("\n ID não encontrado. \n" + "1 - Voltar ao menu \n" + "2 - Consultar outro produto \n", function(escolhaUsuario){
                             escolhaUsuario = Number(escolhaUsuario);
                             switch(escolhaUsuario){
                                 case 1:
@@ -117,7 +134,7 @@ function gestaoDeEstoque (escolhaUsuario){
             break;
 
         case 3:
-            //TODO: Atualizar produto
+            //DONE: Atualizar produto
             //DONE: Inserir o rl.question
             rl.question("Digite o ID do produto que gostaria de atualizar: ", function(idDoProduto){
                 // DONE: Tratar cenários em que a lista é vazia
@@ -129,7 +146,6 @@ function gestaoDeEstoque (escolhaUsuario){
                     tratarResultadoInvalido(3);
                 }
 
-                // Todo [BUG]: o loop está editando o último produto da lista, embora eu esteja pedindo para editar o primeiro.
                 rl.question(`Edite aqui o produto '${listaDeProdutos[produto].nome}' : `, function(produtoEditado){
                     for (produto in listaDeProdutos){
                         if(listaDeProdutos[produto].id === Number(idDoProduto)){
@@ -145,7 +161,7 @@ function gestaoDeEstoque (escolhaUsuario){
 
 
         case 4:
-            // TODO: Remover produto
+            // DONE: Remover produto
             rl.question("Digite o ID do produto que gostaria de remover: ", function(idDoProduto){
                 // DONE: Tratar cenários em que a lista é vazia
                 tratarListaVazia();
@@ -173,8 +189,9 @@ function gestaoDeEstoque (escolhaUsuario){
             break;
 
         case 6:
-            // TODO: sair
-
+            // DONE: sair
+            console.log("Encerrando execução.");
+            rl.close();
             break;
     }
 
