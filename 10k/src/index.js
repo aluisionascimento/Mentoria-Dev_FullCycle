@@ -13,45 +13,39 @@ let rl = readline.createInterface({input, output}), projeto;
 
 // ---------------------------------- Funções Auxiliares ------------------------------
 
-listaDeProjetos = [];
+let listaDeProjetos = [];
 
-listaDeCategorias = [];
+let listaDeCategorias = [];
 
-idMax = 0;
+let idDoProjeto = 1;
 
-// Validar input
-function verficarOpcaoInvalida(escolhaUsuario){
-    if (isNaN(escolhaUsuario) === true || escolhaUsuario < 1 || escolhaUsuario > 6) {
+// Refatorado -> Arrow function
+const verificarOpcaoInvalida = escolhaUsuario => {
+    if (isNaN(escolhaUsuario) === true || escolhaUsuario < 1 || escolhaUsuario > 6){
         console.log("Digite um número que corresponda a uma opção válida")
         menuInicial()
         return;
     }
 }
 
-// Validar ID 
-function verficarIdInvalido(idDoProjeto){
-    idDoProjeto = Number(idDoProjeto)
-    
-    if (isNaN(idDoProjeto) === true || idDoProjeto < 0 || idDoProjeto > idMax){
-        console.log("Este não é um id válido\n");
-        //menuIdInvalido()
-    }
-    return idDoProjeto;
-}
+// Esta função valida se o projeto buscado em diferentes contextos (consulta, edição e remoção) é válido.
+const projetoValido = projetoBuscado => listaDeProjetos
+    .find(projeto => projeto.id === Number(projetoBuscado) || projeto.nome.toLowerCase().trim() === projetoBuscado.toLowerCase().trim())
 
-function tratarListaVazia(){
-
+// Refatorado -> Arrow function
+const tratarListaVazia = opcaoUsuario => {
     if (listaDeProjetos.length === 0){
-        console.log("A lista de projetos está vazia")
+            return true;
     }
-    return true;
+    return false;
 }
 
+// Todo: analisar se há forma menos verbosa de escrever esta função. Ou se há repetições que posso eliminar
 function menuAlternativo(opcaoUsuario){
 
     switch(opcaoUsuario){
         case "buscarOutroProjeto":
-            rl.question("Como deseja seguir? \n 1- Voltar ao Menu \n 2- Buscar outro ID\n", function(opcaoUsuario){
+            rl.question("\n Como deseja seguir? \n 1- Voltar ao Menu \n 2- Buscar outro ID\n", function(opcaoUsuario){
                 switch(opcaoUsuario){
                     case "1":
                         menuInicial();
@@ -65,7 +59,7 @@ function menuAlternativo(opcaoUsuario){
             break;
 
         case "editarOutroProjeto":
-            rl.question("Como deseja seguir? \n 1- Voltar ao Menu \n 2- Editar outro projeto\n", function(opcaoUsuario){
+            rl.question("\n Como deseja seguir? \n 1- Voltar ao Menu \n 2- Editar outro projeto\n", function(opcaoUsuario){
                 switch(opcaoUsuario){
                     case "1":
                         menuInicial();
@@ -77,11 +71,28 @@ function menuAlternativo(opcaoUsuario){
                 }
             });
             break;
+
+        case "removerOutroProjeto":
+            rl.question("\n Como deseja seguir?\n 1- Voltar ao Menu\n 2- Remover outro projeto\n", function(opcaoUsuario){
+                switch(opcaoUsuario){
+                    case "1":
+                        menuInicial();
+                        break;
+                    case "2":
+                        removerProjeto();
+                        break
+                        return;
+                }
+            });
+            break;
+
     }
+
 }
 
 // ---------------------------------- Funções Menu Principal --------------------------
 
+// Todo [bug]: Os ids do projeto não podem ser baseados no length da listaDeProjetos, podem haver IDs deletados sendo recriados ou até problemas de IDs duplicados.
 function cadastrarProjeto(){
     rl.question("Escreva o nome do seu novo projeto: ", function(nomeDoProjeto){
         // Definição de projeto
@@ -89,38 +100,40 @@ function cadastrarProjeto(){
 
         const projeto = {
             nome: nomeDoProjeto,
-            id: listaDeProjetos.length + 1,
+            id: idDoProjeto,
             // categoria: categoriaDeProjeto,
             // tempoSomado: entradaDeTempo
         }
         listaDeProjetos.push(projeto);
-        idMax = listaDeProjetos.length;
-        console.log(`ID-${projeto.id} | Projeto: ${projeto.nome}`);
+        idDoProjeto += 1;
+        console.log(`\nO projeto 'ID-${projeto.id} | Nome: ${projeto.nome}' foi registrado com sucesso. \n`);
         menuInicial();
     });
     return;
 }
 
-function buscarProjeto(){
+// Refatorado -> Foi criada a função auxiliar projetoValido que é chamada aqui.
+// A lógica que edita o nome do projeto está mais clean
+function buscarProjeto(opcaoUsuario){
 
     if (tratarListaVazia() === true){
-        console.log("Não é possível buscar projetos pois não há projetos cadastrados\n")
-        menuInicial("buscarOutroProjeto");
+        console.log("\nNão é possível buscar um projeto pois a lista está vazia\n")
+        menuAlternativo("buscarOutroProjeto");
     }
 
-    rl.question("Digite o Id do projeto que deseja buscar: ", function(idDoProjeto){
+    rl.question("\nDigite o ID ou nome do projeto que deseja buscar: ", function(projetoBuscado){
 
-        //todo: implementar busca de projeto por nome
-        
-        idDoProjeto = Number(idDoProjeto);
-        verficarIdInvalido(idDoProjeto);
+        const projetoEncontrado = projetoValido(projetoBuscado);
 
-        for (projeto in listaDeProjetos) {
-            if (listaDeProjetos[projeto].id === Number(idDoProjeto)){
-                    console.log(`O projeto selecionado foi ${listaDeProjetos[projeto].nome} \n`);
-                    menuAlternativo("buscarOutroProjeto");
-            }
+        if(projetoEncontrado){
+            console.log(`\nO projeto selecionado foi: ID-${projetoEncontrado.id} | ${projetoEncontrado.nome}\n`);
+            menuAlternativo("buscarOutroProjeto");
+            return;
         }
+
+        console.log(`\nNenhum projeto encontrado com o valor buscado (${projetoBuscado})\n`);
+        menuAlternativo("buscarOutroProjeto");
+        return
     });
     return;
 }
@@ -130,64 +143,76 @@ function editarProjeto(){
     if (tratarListaVazia() === true){
         console.log("Não há produtos na lista para editar \n")
         menuAlternativo("editarOutroProjeto");
+        return;
     }
 
-    rl.question("Digite o Id do projeto que deseja editar: ", function(idDoProjeto){
-        idDoProjeto = Number(idDoProjeto);
-        verficarIdInvalido(idDoProjeto);
+    rl.question("\nDigite o ID ou nome do projeto que deseja editar: ", function(projetoBuscado){
 
-        rl.question("Digite o novo nome do projeto: ", function(novoNomeDoProjeto){
-            for(projeto in listaDeProjetos){
+        const projetoEncontrado = projetoValido(projetoBuscado);
 
-                if (listaDeProjetos[projeto].id === idDoProjeto){
-                    listaDeProjetos[projeto].nome = novoNomeDoProjeto;
-                    menuAlternativo("editarOutroProjeto");
-                }
-            }
-        });
+        if (projetoEncontrado){
+            rl.question("\nDigite o novo nome do projeto: ", function(novoNomeDoProjeto){
+                projetoEncontrado.nome = novoNomeDoProjeto;
+                console.log(`\nO projeto foi renomeado para '${projetoEncontrado.nome}'\n'.`)
+                menuAlternativo("editarOutroProjeto");
+            });
+            return;
+        }
+
+        console.log(`\nNenhum projeto encontrado com o valor buscado (${projetoBuscado})\n`);
+        return menuAlternativo("editarOutroProjeto");
+
     });
 
 }
 
 function removerProjeto(){
-    rl.question("Digite o Id do projeto que deseja remover: ", function(idDoProjeto){
+    rl.question("\nDigite o ID ou nome do projeto que deseja remover: ", function(projetoBuscado){
 
         // Todo: implementar remoção de projeto por nome
-        
-        idDoProjeto = Number(idDoProjeto);
-        verficarIdInvalido(idDoProjeto);
-
-        for (projeto in listaDeProjetos) {
-            if (listaDeProjetos[projeto].id === idDoProjeto){
-                if (projeto === idMax){
-                    idMax = listaDeProjetos[projeto-1].id;
-                }
-                listaDeProjetos.splice(projeto, 1);
-                menuInicial();
-                return;
-            }
+        if (tratarListaVazia(projetoBuscado)){
+            console.log(`\nNão há projetos para remover pois a lista está vazia\n`)
+            menuInicial()
+            return;
         }
-    })
 
+        const projetoEncontrado = projetoValido(projetoBuscado);
+
+        const indexProjetoEncontrado = listaDeProjetos.indexOf(projetoEncontrado);
+
+        if (projetoEncontrado){
+            listaDeProjetos.splice(indexProjetoEncontrado,1);
+            console.log(`Esta é a lista de projetos atualizada.`)
+            listarProjeto()
+            return menuAlternativo("removerOutroProjeto");
+        }
+
+        console.log(`\nNenhum projeto encontrado com o valor buscado (${projetoBuscado})\n`);
+        return menuInicial();
+    })
 }
 
-function listarProjeto(){
+// Refatorado -> introdução do .map
+function listarProjeto(opcaoUsuario){
 
     if (tratarListaVazia() === true){
-        console.log("Não há projetos cadastrados para listagem \n")
+        console.log("\nNão há produtos na lista para editar \n")
         menuInicial();
+        return;
     }
 
-    for (projeto in listaDeProjetos){
-        console.log(`ID-${listaDeProjetos[projeto].id} | Nome: ${listaDeProjetos[projeto].nome}`)
-    }
+    console.log(
+        listaDeProjetos
+        .map(projeto => {return `ID-${projeto.id} | Nome: ${projeto.nome}`})
+        .join('\n')
+    );
+
     menuInicial();
     return;
 }
 
-
 function sair(){
-    console.log("Encerrando o programa")
+    console.log("\nEncerrando o programa\n")
     rl.close()
 }
 
@@ -202,8 +227,8 @@ function menuInicial () {
     console.log("")
     console.log("========== Menu Inicial ==========\n")
     console.log("1 - Adicionar Projeto")
-    console.log("2 - Buscar Projeto por ID")
-    console.log("3 - Atualizar Dados projeto")
+    console.log("2 - Buscar Projeto por ID ou nome")
+    console.log("3 - Editar projeto")
     console.log("4 - Remover Projeto")
     console.log("5 - Listar Projeto")
     console.log("6 - Sair\n")
@@ -214,7 +239,7 @@ function menuInicial () {
         opcaoUsuario = Number(opcaoUsuario);
 
         // Validar input
-        verficarOpcaoInvalida(opcaoUsuario);
+        verificarOpcaoInvalida(opcaoUsuario);
         gestaoProjeto(opcaoUsuario);
     });
 }
@@ -231,7 +256,7 @@ function gestaoProjeto(opcaoUsuario){
             break;
 
         case 2:
-            buscarProjeto();
+            buscarProjeto(opcaoUsuario);
             break;
 
         case 3:
@@ -243,7 +268,7 @@ function gestaoProjeto(opcaoUsuario){
             break;
 
         case 5:
-            listarProjeto();
+            listarProjeto(opcaoUsuario);
             break;
 
         case 6:
