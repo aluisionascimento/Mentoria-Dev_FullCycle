@@ -39,8 +39,8 @@ const calcularDesconto = (preco, desconto) => {
 // 🎯 Nível 5: Arrow Function + Método de Array (.map)
 // Sua missão é criar uma Arrow Function chamada **formatarPrecos**.
 // 📝 Requisitos:
-// 1. Receber um **array de números** (ex: `[10, 50, 100]`).
-// 2. Usar o **.map()** para transformar cada número em uma string no formato `"R$ X,00"`.
+// 1. Receber um **array de números** (ex: [10, 50, 100]).
+// 2. Usar o **.map()** para transformar cada número em uma string no formato "R$ X,00".
 // 3. Retornar esse novo array formatado.
 // 🏃‍♂️ Como testar:
 //
@@ -48,7 +48,7 @@ const calcularDesconto = (preco, desconto) => {
 //
 // console.log(formatarPrecos([10, 50, 100]));
 // // Deve imprimir: ["R$ 10,00", "R$ 50,00", "R$ 100,00"]
-// ```
+//  ```
 let listaDePrecos = [10,50,60,70]
 
 // Cria nova array com preços formatados.
@@ -62,7 +62,7 @@ const funcaoPrecosFormatados = listaDePrecos => listaDePrecos.map(preco=> {retur
 
 // console.log(funcaoPrecosFormatados(listaDePrecos));
 
-```
+/*
 ### 🎯 Nível 6: Extraindo Dados de Objetos com .map()
 
 Sua missão é transformar uma lista de produtos em uma lista de frases formatadas.
@@ -72,13 +72,12 @@ Sua missão é transformar uma lista de produtos em uma lista de frases formatad
     1. Use .map() para percorrer o array produtos.
 2. Use uma **Arrow Function em linha única** (aproveitando o retorno automático, sem chaves {}).
 3. Para cada produto, retorne a frase: "O produto [nome] custa R$ [preco]".
-
- ```
-    const produtos = [
-        { nome: "Teclado", preco: 150 },
-        { nome: "Mouse", preco: 80 },
-        { nome: "Monitor", preco: 900 }
-    ];
+*/
+const produtos = [
+    { nome: "Teclado", preco: 150 },
+    { nome: "Mouse", preco: 80 },
+    { nome: "Monitor", preco: 900 }
+];
 
 const produtosFormatados = produtos.map(produtos =>`O produto é ${produtos.nome} e o preço é ${produtos.preco}`)
 

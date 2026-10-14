@@ -8,7 +8,7 @@ clickBotaoTodoList.onclick = function () {
 
     opcaoEscolhida = document.querySelector("select#menuOpcoes").value
 
-    // 1. Cadastrar Tarefa (guardar em array)
+    // 1. Cadastrar Tarefa
     switch (opcaoEscolhida) {
         case "1":
             // 1.2. Receber valor
