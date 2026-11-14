@@ -1,3 +1,14 @@
+// TODO: Criar estrutura da entidade Categoria
+// TODO: Criar estrutura da entidade Tag
+// TODO: Criar estrutura da entidade Marco (atributos: Data limite, Status, Meta de tempo)
+// TODO: Criar estrutura da entidade Registro de Tempo (atributos: Entrada, Saída)
+// TODO: Implementar relacionamento entre Usuário e Projetos (1:N)
+// TODO: Implementar relacionamento entre Categoria e Projeto (1:N)
+// TODO: Implementar relacionamento entre Tags e Projetos (N:N)
+// TODO: Implementar relacionamento entre Marco e Projeto (1:N)
+// TODO: Implementar relacionamento de Registro de Tempo com Usuário e Projeto (1:N)
+// TODO: Implementar função para calcular o tempo total logado no Projeto de forma derivada dos Registros de Tempo
+// TODO: Atualizar fluxos de criação, busca e edição de Projetos para consumir as novas entidades
 // ---------------------------------- Importação de funções --------------------------------
 
 const {
@@ -6,69 +17,13 @@ const {
     menuAlternativo
 } = require('../utils/funcoesAuxiliares.js')
 
-
-
 // ---------------------------------- Declaração de variáveis ------------------------------
 
 let listaDeProjetos = [];
 
-//let listaDeCategorias = [];
-
 let idDoProjeto = 1;
 
-// ---------------------------------- Fluxo Alternativo ------------------------------------
-
-// Todo: analisar se há forma menos verbosa de escrever esta função. Ou se há repetições que posso eliminar
-// function menuAlternativo(opcaoUsuario, rl){
-//
-//     switch(opcaoUsuario){
-//         case "buscarOutroProjeto":
-//             rl.question("\n Como deseja seguir? \n 1- Voltar ao Menu \n 2- Buscar outro ID\n", function(opcaoUsuario){
-//                 switch(opcaoUsuario){
-//                     case "1":
-//                         menuInicial();
-//                         break;
-//                     case "2":
-//                         buscarProjeto();
-//                         break
-//                         return;
-//                 }
-//             });
-//             break;
-//
-//         case "editarOutroProjeto":
-//             rl.question("\n Como deseja seguir? \n 1- Voltar ao Menu \n 2- Editar outro projeto\n", function(opcaoUsuario){
-//                 switch(opcaoUsuario){
-//                     case "1":
-//                         menuInicial();
-//                         break;
-//                     case "2":
-//                         editarProjeto(rl);
-//                         break
-//                         return;
-//                 }
-//             });
-//             break;
-//
-//         case "removerOutroProjeto":
-//             rl.question("\n Como deseja seguir?\n 1- Voltar ao Menu\n 2- Remover outro projeto\n", function(opcaoUsuario){
-//                 switch(opcaoUsuario){
-//                     case "1":
-//                         menuInicial();
-//                         break;
-//                     case "2":
-//                         removerProjeto(rl);
-//                         break
-//                         return;
-//                 }
-//             });
-//             break;
-//
-//     }
-//
-// }
-
-// ---------------------------------- Funções Menu Principal -------------------------------
+// ---------------------------------- Funções Principais -----------------------------------
 
 function cadastrarProjeto(rl, menuInicial) {
     rl.question("Escreva o nome do seu novo projeto: ", function(nomeDoProjeto){
