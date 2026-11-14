@@ -1,0 +1,6 @@
+/*
+Atributos
+- ID Categoria
+- Nome
+ */
+
