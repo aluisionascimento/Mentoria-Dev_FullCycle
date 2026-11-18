@@ -13,10 +13,10 @@
 //import {gestaoProjeto} from './src/tasks/projetoController.js' // Forma moderna - Convenção de mercado
 const {gestaoProjeto} = require('./tasks/projetoController.js'); // Forma tradicional
 const {verificarOpcaoInvalida} = require('./utils/funcoesAuxiliares.js');
+//const {menuUsuario} = require('./tasks/usuarioController.js');
 
 // Importar tudo. Exige que as funções sejam chamadas com prefixo. Ex: controller.gestaoProjeto(opcaoUsuario)
 //const controller = require('/src/tasks/projetoController')
-
 
 // ---------------------------------- Criação da Interface ----------------------------
 const readline = require('node:readline');
@@ -43,9 +43,9 @@ function menuInicial () {
 
         const opcao = Number(opcaoUsuario)
         // Validar input
-       if(verificarOpcaoInvalida(opcao)){
-         return menuInicial();
-       }
+        if(verificarOpcaoInvalida(opcao)){
+            return menuInicial();
+        }
         gestaoProjeto(opcao, rl, menuInicial);
     });
 }
